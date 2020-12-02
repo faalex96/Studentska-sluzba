@@ -25,9 +25,19 @@ class Assignment:
     def __str__(self):
         return "\"{0:<20s}\", {1}, points:{2}".format(self.title, self.due_date.strftime("%b %d %Y"), self.points)
 
-a = Assignment("Upravljanje toka programa", datetime(2021, 1, 25))
-a2 = Assignment("For i While petlja", datetime(2021, 1, 24))
-a3 = Assignment("Funkcije", datetime(2021, 2, 10))
+# Zadaci iz mehanike
+a = Assignment("Statika", datetime(2021, 1, 25))
+a2 = Assignment("Dinamika", datetime(2021, 1, 24))
+a3 = Assignment("Kinematika", datetime(2021, 2, 10))
+
+# Zadaci iz racunarstva
+ra = Assignment("OOP", datetime(2020,12,20))
+ra2 = Assignment("Concurrency", datetime(2020, 12,10))
+
+# Zadaci iz oet-a
+oa = Assignment("Elektrostatika", datetime(2021, 1, 30))
+oa2 = Assignment("Magnetni Fluks", datetime(2021, 1, 30))
+oa3 = Assignment("Kirhofov Zakon", datetime(2021, 1, 10))
 
 class Subject:
     def __init__(self, title, code, ESPB):
@@ -86,13 +96,16 @@ class Subject:
     def __str__(self):
         return "#{0} \"{1:^20s}\", ESPB:{2:2s} GRADE:{3}".format(self.code, self.title, str(self.ESPB), self.grade)
 
+
 mehanika = Subject("Mehanika","101",9)
 mehanika.add_assignements(a,a2,a3)
-mehanika.print_assignements()
 
 racunarstvo = Subject("Racunarstvo", "101", 12)
-racunarstvo.add_assignements(Assignment("OOP", datetime(2020,12,2)))
-racunarstvo.add_assignements(Assignment("Concurrency", datetime(2020, 12,10)))
+racunarstvo.add_assignements(ra, ra2)
+
+oet = Subject("Elektrotehnika", "102", 7)
+oet.add_assignements(oa, oa2, oa3)
+
 
 
 class Student(Person):
@@ -106,7 +119,7 @@ class Student(Person):
         self.passed_subs = []               # Necessary for eliminating multiple forwarding of the same subject
         self.ESPB = 0
     
-    def add_subject(self, *subs):
+    def add_subjects(self, *subs):
         """ Adds subject to students subjects list"""
         for sub in subs:
             self.subjects.append(sub)
@@ -117,10 +130,14 @@ class Student(Person):
             if sub.title == subject_title:
                 return sub
 
-    def print_all_subjects(self):
+    def print_all_subjects(self, sub_iterable=None):
         """Prints all subjects"""
-        for sub in self.subjects:
-            print(sub)
+        if sub_iterable == None:
+            for sub in self.subjects:
+                print(sub)
+        else:
+            for sub in sub_iterable:
+                print(sub)
 
     def change_assignement_points(self, subject_title, assignement_title, points):
         """Find subject, and its's assignment and change it's points"""
@@ -138,6 +155,7 @@ class Student(Person):
             if subject not in self.passed_subs:             # Make sure you don't forward same subject twice
                 self.ESPB += subject.ESPB
                 self.passed_subs.append(subject)
+                
 
     def print_passed_subjects(self):
         """ Prints all passed and forwarded subjects"""
@@ -146,6 +164,20 @@ class Student(Person):
                 print(sub)
         #for sub in self.passed_subs:
         #    print(sub)
+
+    def sort_subjects(self, sort_type="grade", sub_type="all"):
+        """ Sorts and prints subjects(default = all, passed) by type (default = grade, ESPB) """
+        sorting_obj = None          
+        if sub_type == "passed":                
+            sorting_obj = self.passed_subs
+        else:
+            sorting_obj = self.subjects             # Even if sub_type is wrong default sorting will be on all subjects
+
+        sorted_subs = sorted(sorting_obj, key = lambda subject: getattr(subject, sort_type), reverse=True)
+        self.print_all_subjects(sorted_subs)
+
+        return sorted_subs
+
 
     def enroll_new_year(self, tresh_year, tresh_budget):
         """There are two ESPB tresholds: year and budget treshold. 
@@ -162,6 +194,7 @@ class Student(Person):
 
     @property
     def average_grade(self):
+        """ Return students average grade"""
         avg = 0
         for sub in self.passed_subs:
             avg += sub.grade
@@ -169,21 +202,32 @@ class Student(Person):
 
     def __str__(self):
         return "{0}, year: {1}. course: {2}, ESPB:{3}, Avg:{4:.2f}, funding: {5}.".format(self.full_name, self.year, self.course, self.ESPB, self.average_grade,self.funding)
-        
-Sale = Student("Aleksandar","Fa","aleksandarfa@dev.gmail", 1, "Biomedical engineering","budget")
-Sale.add_subject(mehanika)
-Sale.add_subject(racunarstvo)
 
-Sale.change_assignement_points("Mehanika", "Upravljanje toka programa", 30)
-Sale.change_assignement_points("Mehanika", "For i While petlja", 30)
-Sale.change_assignement_points("Mehanika", "Funkcije", 30)
+# Napravi studenta i dodaj mu predmete        
+Sale = Student("Aleksandar","Fa","aleksandarfa@dev.gmail", 1, "Biomedical engineering","budget")
+Sale.add_subjects(mehanika, racunarstvo, oet)
+
+# Promeni poene iz mehanike
+Sale.change_assignement_points("Mehanika", "Statika", 30)
+Sale.change_assignement_points("Mehanika", "Dinamika", 30)
+Sale.change_assignement_points("Mehanika", "Kinematika", 10)
 Sale.forward_subject("Mehanika")
 
-#Sale.print_all_subjects()
-Sale.change_assignement_points("Racunarstvo", "OOP", 30)
-Sale.change_assignement_points("Racunarstvo","Concurrency", 21)
+# Promeni poene iz racunarstva
+Sale.change_assignement_points("Racunarstvo", "OOP", 70)
+Sale.change_assignement_points("Racunarstvo","Concurrency", 30)
 Sale.forward_subject("Racunarstvo")
-Sale.forward_subject("Racunarstvo")
-Sale.print_passed_subjects()
-print(Sale)
-Sale.enroll_new_year(36, 48)
+
+# Promeni poene iz oet-a
+Sale.change_assignement_points("Elektrotehnika", "Elektrostatika", 30)
+Sale.change_assignement_points("Elektrotehnika", "Magnetni Fluks", 12)
+Sale.change_assignement_points("Elektrotehnika", "Kirhofov Zakon", 10)
+Sale.forward_subject("Elektrotehnika")
+
+# Ispisi
+#Sale.print_passed_subjects()
+#print(Sale)
+
+Sale.sort_subjects(sort_type="ESPB")
+
+
