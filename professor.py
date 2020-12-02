@@ -1,5 +1,4 @@
-from student import Person
-from student import Subject
+from student import Person, Subject
 """ Different design, all searches for subjects will be don by subject code, not by subject title! """
 
 class ProfessorSubject(Subject):
@@ -52,17 +51,19 @@ class Professor(Person):
         else:
             return "{0:<20s} {1:<20s} email: {2:<20s} cabinet: {3:<20s}".format(self.title, self.full_name, self.email, self.cabinet)
 
-# Kreiraj profesora
-p = Professor("Goran","Stojanovic", "redovni profesor")
-p.set_info(email="goranstojanovic@uns.ac.rs", cabinet="A202")
-print(p)
-# Kreiraj predmet
-elektronika = ProfessorSubject("Elektronika", "101", 5, p)
-medicinska_elektronika = ProfessorSubject("Medicinska Elektronika", "102", 5, p)
-materijali = ProfessorSubject("Matrijali Fabrikacije", "103", 5, p)
-p.add_subjects(elektronika, medicinska_elektronika, materijali)
-p.print_subjects()
-print("#"*50)
-p.remove_subjects("103", "102")
-p.print_subjects()
+# Driver code
+if __name__ == "__main__":
+    # Kreiraj profesora
+    p = Professor("Goran","Stojanovic", "redovni profesor")
+    p.set_info(email="goranstojanovic@uns.ac.rs", cabinet="A202")
+    print(p)
+    # Kreiraj predmet
+    elektronika = ProfessorSubject("Elektronika", "101", 5, p)
+    medicinska_elektronika = ProfessorSubject("Medicinska Elektronika", "102", 5, p)
+    materijali = ProfessorSubject("Matrijali Fabrikacije", "103", 5, p)
+    p.add_subjects(elektronika, medicinska_elektronika, materijali)
+    p.print_subjects()
+    print("#"*50)
+    p.remove_subjects("103", "102")
+    p.print_subjects()
 

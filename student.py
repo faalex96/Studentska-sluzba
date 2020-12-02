@@ -25,19 +25,6 @@ class Assignment:
     def __str__(self):
         return "\"{0:<20s}\", {1}, points:{2}".format(self.title, self.due_date.strftime("%b %d %Y"), self.points)
 
-# Zadaci iz mehanike
-a = Assignment("Statika", datetime(2021, 1, 25))
-a2 = Assignment("Dinamika", datetime(2021, 1, 24))
-a3 = Assignment("Kinematika", datetime(2021, 2, 10))
-
-# Zadaci iz racunarstva
-ra = Assignment("OOP", datetime(2020,12,20))
-ra2 = Assignment("Concurrency", datetime(2020, 12,10))
-
-# Zadaci iz oet-a
-oa = Assignment("Elektrostatika", datetime(2021, 1, 30))
-oa2 = Assignment("Magnetni Fluks", datetime(2021, 1, 30))
-oa3 = Assignment("Kirhofov Zakon", datetime(2021, 1, 10))
 
 class Subject:
     def __init__(self, title, code, ESPB):
@@ -95,17 +82,6 @@ class Subject:
 
     def __str__(self):
         return "#{0} \"{1:^20s}\", ESPB:{2:2s} GRADE:{3}".format(self.code, self.title, str(self.ESPB), self.grade)
-
-
-mehanika = Subject("Mehanika","101",9)
-mehanika.add_assignements(a,a2,a3)
-
-racunarstvo = Subject("Racunarstvo", "101", 12)
-racunarstvo.add_assignements(ra, ra2)
-
-oet = Subject("Elektrotehnika", "102", 7)
-oet.add_assignements(oa, oa2, oa3)
-
 
 
 class Student(Person):
@@ -196,38 +172,66 @@ class Student(Person):
     def average_grade(self):
         """ Return students average grade"""
         avg = 0
-        for sub in self.passed_subs:
-            avg += sub.grade
-        return avg/len(self.passed_subs)
-
+        if (len(self.passed_subs) > 0):
+            for sub in self.passed_subs:
+                avg += sub.grade
+            return avg/len(self.passed_subs)
+        else:
+            return 0
+            
     def __str__(self):
         return "{0}, year: {1}. course: {2}, ESPB:{3}, Avg:{4:.2f}, funding: {5}.".format(self.full_name, self.year, self.course, self.ESPB, self.average_grade,self.funding)
 
-# Napravi studenta i dodaj mu predmete        
-Sale = Student("Aleksandar","Fa","aleksandarfa@dev.gmail", 1, "Biomedical engineering","budget")
-Sale.add_subjects(mehanika, racunarstvo, oet)
+# Driver code 
+if __name__ == "__main__":
+    # Zadaci iz mehanike
+    a = Assignment("Statika", datetime(2021, 1, 25))
+    a2 = Assignment("Dinamika", datetime(2021, 1, 24))
+    a3 = Assignment("Kinematika", datetime(2021, 2, 10))
 
-# Promeni poene iz mehanike
-Sale.change_assignement_points("Mehanika", "Statika", 30)
-Sale.change_assignement_points("Mehanika", "Dinamika", 30)
-Sale.change_assignement_points("Mehanika", "Kinematika", 10)
-Sale.forward_subject("Mehanika")
+    # Zadaci iz racunarstva
+    ra = Assignment("OOP", datetime(2020,12,20))
+    ra2 = Assignment("Concurrency", datetime(2020, 12,10))
 
-# Promeni poene iz racunarstva
-Sale.change_assignement_points("Racunarstvo", "OOP", 70)
-Sale.change_assignement_points("Racunarstvo","Concurrency", 30)
-Sale.forward_subject("Racunarstvo")
+    # Zadaci iz oet-a
+    oa = Assignment("Elektrostatika", datetime(2021, 1, 30))
+    oa2 = Assignment("Magnetni Fluks", datetime(2021, 1, 30))
+    oa3 = Assignment("Kirhofov Zakon", datetime(2021, 1, 10))
 
-# Promeni poene iz oet-a
-Sale.change_assignement_points("Elektrotehnika", "Elektrostatika", 30)
-Sale.change_assignement_points("Elektrotehnika", "Magnetni Fluks", 12)
-Sale.change_assignement_points("Elektrotehnika", "Kirhofov Zakon", 10)
-Sale.forward_subject("Elektrotehnika")
+    mehanika = Subject("Mehanika","101",9)
+    mehanika.add_assignements(a,a2,a3)
 
-# Ispisi
-#Sale.print_passed_subjects()
-#print(Sale)
+    racunarstvo = Subject("Racunarstvo", "101", 12)
+    racunarstvo.add_assignements(ra, ra2)
 
-Sale.sort_subjects(sort_type="ESPB")
+    oet = Subject("Elektrotehnika", "102", 7)
+    oet.add_assignements(oa, oa2, oa3)
+
+    # Napravi studenta i dodaj mu predmete        
+    Sale = Student("Aleksandar","Fa","aleksandarfa@dev.gmail", 1, "Biomedical engineering","budget")
+    Sale.add_subjects(mehanika, racunarstvo, oet)
+
+    # Promeni poene iz mehanike
+    Sale.change_assignement_points("Mehanika", "Statika", 30)
+    Sale.change_assignement_points("Mehanika", "Dinamika", 30)
+    Sale.change_assignement_points("Mehanika", "Kinematika", 10)
+    Sale.forward_subject("Mehanika")
+
+    # Promeni poene iz racunarstva
+    Sale.change_assignement_points("Racunarstvo", "OOP", 70)
+    Sale.change_assignement_points("Racunarstvo","Concurrency", 30)
+    Sale.forward_subject("Racunarstvo")
+
+    # Promeni poene iz oet-a
+    Sale.change_assignement_points("Elektrotehnika", "Elektrostatika", 30)
+    Sale.change_assignement_points("Elektrotehnika", "Magnetni Fluks", 12)
+    Sale.change_assignement_points("Elektrotehnika", "Kirhofov Zakon", 10)
+    Sale.forward_subject("Elektrotehnika")
+
+    # Ispisi
+    #Sale.print_passed_subjects()
+    #print(Sale)
+
+    Sale.sort_subjects(sort_type="ESPB")
 
 
