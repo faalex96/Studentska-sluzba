@@ -1,40 +1,35 @@
-from student import Person, Subject
-""" Different design, all searches for subjects will be don by subject code, not by subject title! """
+from person import Person
+from subject import Subject
+""" Different design, all searches for subjects will be done by subject code, not by subject title! """
 
 class ProfessorSubject(Subject):
-    def __init__(self, title, code, ESPB, professor):
+    def __init__(self, title, code, ESPB):
         super().__init__(title, code, ESPB)
-        self.professor = professor
+        self.professors = []
+    
+    def add_professors(self, *teachers):
+        """ Adds professors to professorsSubject """
+        for pr in teachers:
+            self.professors.append(pr)
 
     def __str__(self):
-        return "#{0} \"{1:<30s}\", ESPB:{2:2s}, Teaches: {3:<20s}".format(self.code, self.title, str(self.ESPB), self.professor.full_name)
+        return "#{0} \"{1:<30s}\", ESPB:{2:2s}, Teaches: {3:<20s}".format(self.code, self.title, str(self.ESPB), self.professors[0].full_name)
 
 class Professor(Person):
     def __init__(self, first_name, last_name, title):
         super().__init__(first_name, last_name)
         self.title = title
-        self.teaches = []
         self.email = None
         self.cabinet = None
-
-    def add_subjects(self, *subs):
-        """ Add subject that professor teaches """
-        for sub in subs:
-            self.teaches.append(sub)
 
     def remove_subjects(self, *codes):
         """Removes subjects defined by subject code. This means this teacher can no longer teach that specific subject."""
         for c in codes:
-            for sub in self.teaches:
+            for sub in self.subjects:
                 if sub.code == c:
-                    self.teaches.remove(sub)
+                    self.subjects.remove(sub)
 
         #print("Professor {} doesn't teach {}.".format(self.full_name, code))
-
-    def print_subjects(self):
-        """ Prints subject that professor teaches"""
-        for sub in self.teaches:
-            print(sub)
 
     def set_info(self, email, cabinet):
         """ Set professor information """
@@ -58,12 +53,9 @@ if __name__ == "__main__":
     p.set_info(email="goranstojanovic@uns.ac.rs", cabinet="A202")
     print(p)
     # Kreiraj predmet
-    elektronika = ProfessorSubject("Elektronika", "101", 5, p)
-    medicinska_elektronika = ProfessorSubject("Medicinska Elektronika", "102", 5, p)
-    materijali = ProfessorSubject("Matrijali Fabrikacije", "103", 5, p)
+    elektronika = ProfessorSubject("Elektronika", "101", 5)
+    medicinska_elektronika = ProfessorSubject("Medicinska Elektronika", "102", 5)
+    materijali = ProfessorSubject("Matrijali Fabrikacije", "103", 5)
     p.add_subjects(elektronika, medicinska_elektronika, materijali)
-    p.print_subjects()
-    print("#"*50)
-    p.remove_subjects("103", "102")
-    p.print_subjects()
+    elektronika.add_professors(p)
 
