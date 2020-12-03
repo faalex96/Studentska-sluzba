@@ -1,6 +1,7 @@
 from datetime import datetime
 from person import Person
 from subject import Assignment, Subject
+import new_exceptions as excp
 
 class Student(Person):
     def __init__(self, first_name, last_name, email, year, course, funding):
@@ -18,24 +19,41 @@ class Student(Person):
         for sub in self.subjects:
             if sub.title == subject_title:
                 return sub
+        raise excp.SubjectError(subject_title)
     
 
     def change_assignement_points(self, subject_title, assignement_title, points):
         """Find subject, and its's assignment and change it's points"""
-        subject = self.find_subject(subject_title)
-        assign = subject.find_assignement(assignement_title)
+        try:
+            subject = self.find_subject(subject_title)
+        except excp.SubjectError:
+            raise excp.SubjectError(subject_title)
+
+        try:
+            assign = subject.find_assignement(assignement_title)
+        except excp.AssignmentError:
+            raise excp.AssignmentError(assignement_title)
+
         assign.change_points(points)
         subject.calculate_grade()
     
     def forward_subject(self, subject_title):
         """ If subject is passed and forwarded it will show up in passed subject print
         with it's code, title, ESPB point and grade."""
-        subject = self.find_subject(subject_title)
+        try:
+            subject = self.find_subject(subject_title)
+        except excp.SubjectError:
+            raise excp.SubjectError(subject_title)
+
         subject.forward_subject()
         if subject.passed and subject.forwared:
             if subject not in self.passed_subs:             # Make sure you don't forward same subject twice
                 self.ESPB += subject.ESPB
                 self.passed_subs.append(subject)
+            else:
+                print("Subject has been passed alredy.")
+        else:
+            print("Subject has not been passed yet.")
                 
 
     def sort_subjects(self, sort_type="grade", sub_type="all"):
@@ -79,21 +97,22 @@ class Student(Person):
     def __str__(self):
         return "{0}, year: {1}, course: {2}, ESPB:{3}, Avg:{4:.2f}, funding: {5}.".format(self.full_name, self.year, self.course, self.ESPB, self.average_grade,self.funding)
 
+
 # Driver code 
 if __name__ == "__main__":
     # Zadaci iz mehanike
-    a = Assignment("Statika", datetime(2021, 1, 25))
-    a2 = Assignment("Dinamika", datetime(2021, 1, 24))
-    a3 = Assignment("Kinematika", datetime(2021, 2, 10))
+    a = Assignment("Statika", datetime(2020, 1, 25))
+    a2 = Assignment("Dinamika", datetime(2020, 1, 24))
+    a3 = Assignment("Kinematika", datetime(2020, 2, 10))
 
     # Zadaci iz racunarstva
     ra = Assignment("OOP", datetime(2020,12,20))
     ra2 = Assignment("Concurrency", datetime(2020, 12,10))
 
     # Zadaci iz oet-a
-    oa = Assignment("Elektrostatika", datetime(2021, 1, 30))
-    oa2 = Assignment("Magnetni Fluks", datetime(2021, 1, 30))
-    oa3 = Assignment("Kirhofov Zakon", datetime(2021, 1, 10))
+    oa = Assignment("Elektrostatika", datetime(2020, 1, 30))
+    oa2 = Assignment("Magnetni Fluks", datetime(2020, 1, 30))
+    oa3 = Assignment("Kirhofov Zakon", datetime(2020, 1, 10))
 
     mehanika = Subject("Mehanika","101",9)
     mehanika.add_assignements(a,a2,a3)
@@ -120,13 +139,14 @@ if __name__ == "__main__":
     Sale.forward_subject("Racunarstvo")
 
     # Promeni poene iz oet-a
-    Sale.change_assignement_points("Elektrotehnika", "Elektrostatika", 30)
+    Sale.change_assignement_points("Elektrotehnika", "Elektrostatika", 0)
     Sale.change_assignement_points("Elektrotehnika", "Magnetni Fluks", 12)
-    Sale.change_assignement_points("Elektrotehnika", "Kirhofov Zakon", 10)
-    #Sale.forward_subject("Elektrotehnika")
-
+    Sale.change_assignement_points("Elektrotehnika", "Kirhofov Zakon", 0)
+    Sale.forward_subject("Elektrotehnika")
+    Sale.print_subjects(passed=True)
     # Ispisi
-    Sale.sort_subjects()
+    #print(Sale.find_subject("Mehanika"))
+
     
 
 

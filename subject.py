@@ -1,4 +1,5 @@
 from datetime import datetime
+import new_exceptions as excp
 
 class Assignment:
     def __init__(self, title, due_date):
@@ -7,9 +8,11 @@ class Assignment:
         self.points = 0
 
     def change_points(self, point):
-        """Can't change points after due date for assignment"""
-        if datetime.now() <= self.due_date:
+        """Can't change points before due date for assignment"""
+        if datetime.now() > self.due_date:
             self.points = point
+        else:
+            print("Due date for this assignment has not passed. Can't change points.")
 
     def __str__(self):
         return "\"{0:<20s}\", {1}, points:{2}".format(self.title, self.due_date.strftime("%b %d %Y"), self.points)
@@ -23,7 +26,6 @@ class Subject:
         self.assignements = []
         self.grade = 5
         self.forwared = False
-        self.professors = []
 
     def add_assignements(self, *assign):
         """Adds assignement into subject assignements list"""
@@ -64,6 +66,7 @@ class Subject:
         for assign in self.assignements:
             if assign.title == assign_title:
                 return assign
+        raise excp.AssignmentError(assign_title)
 
     def print_assignements(self):
         """Prints all assignements"""
