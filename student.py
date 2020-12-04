@@ -3,6 +3,7 @@ from person import Person
 from subject import Assignment, Subject
 import new_exceptions as excp
 
+
 class Student(Person):
     def __init__(self, first_name, last_name, email, year, course, funding):
         super().__init__(first_name, last_name)
@@ -37,6 +38,7 @@ class Student(Person):
         assign.change_points(points)
         subject.calculate_grade()
     
+    
     def forward_subject(self, subject_title):
         """ If subject is passed and forwarded it will show up in passed subject print
         with it's code, title, ESPB point and grade."""
@@ -45,7 +47,7 @@ class Student(Person):
         except excp.SubjectError:
             raise excp.SubjectError(subject_title)
 
-        subject.forward_subject()
+        subject.forward_sub()
         if subject.passed and subject.forwared:
             if subject not in self.passed_subs:             # Make sure you don't forward same subject twice
                 self.ESPB += subject.ESPB
@@ -86,13 +88,18 @@ class Student(Person):
     @property
     def average_grade(self):
         """ Return students average grade"""
-        avg = 0
+        self.avg = 0
         if (len(self.passed_subs) > 0):
             for sub in self.passed_subs:
-                avg += sub.grade
-            return avg/len(self.passed_subs)
+                self.avg += sub.grade
+            return self.avg/len(self.passed_subs)
         else:
             return 0
+
+    @average_grade.setter
+    def average_grade(self, grade):
+        """ average_grade setter is used when need to retrive student date and set avg_grade again"""
+        self.avg = grade
             
     def __str__(self):
         return "{0}, year: {1}, course: {2}, ESPB:{3}, Avg:{4:.2f}, funding: {5}.".format(self.full_name, self.year, self.course, self.ESPB, self.average_grade,self.funding)

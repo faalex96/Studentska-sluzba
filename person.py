@@ -9,6 +9,13 @@ class Person:
         """Returns full name of a person."""
         return "{} {}".format(self.first_name, self.last_name)
 
+    @full_name.setter
+    def full_name(self, name):
+        """ Can be used when retriving person from some file/data_base"""
+        first, last = name.split(" ")
+        self.first_name = first
+        self.last_name = last
+
     def add_subjects(self, *subs):
         for subject in subs:
             self.subjects.append(subject)

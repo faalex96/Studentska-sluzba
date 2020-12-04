@@ -53,11 +53,18 @@ class Subject:
     
     @property
     def passed(self):
+        self.pas = False
         if self.calculate_grade() >= 50:
-            return True
-        return False
+            self.pas = True
+            return self.pas
+        return self.pas
 
-    def forward_subject(self):
+    @passed.setter
+    def passed(self, value):
+        """ Setter for passed property """
+        self.pas = value
+
+    def forward_sub(self):
         """ Change forward subject to True. """
         self.forwared = True
 
