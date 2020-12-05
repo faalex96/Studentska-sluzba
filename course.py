@@ -15,31 +15,40 @@ class Course:
         self.course_title = course_title
         self.course_professor = course_professor
         self.__course_generation = datetime.now().year
-        self.student_data_base = os.getcwd() + "\{}_{}_data.txt".format(self.course_title, self.__course_generation)
+        self.student_data_base = os.getcwd() + "/{}_{}_data.txt".format(self.course_title, self.__course_generation)
         self.subject_data_base = "{}_subjects_data.txt".format(self.course_title)
         self.__student_index = 1
         self.students_num = students_num
         
 
         # Create datebase when course is created
-        with open(self.student_data_base, "w") as data_base:
-            string_format = "*"*50 + " {} {}".format(self.course_title, self.__course_generation) + "*"*50 + "\n\n"     
-            data_base.write(string_format)
-
+        try:
+            with open(self.student_data_base, "w") as data_base:
+                string_format = "*"*50 + " {} {}".format(self.course_title, self.__course_generation) + "*"*50 + "\n\n"     
+                data_base.write(string_format)
+        except FileNotFoundError:
+            raise FileNotFoundError()
 
     def push_student(self, student):
+        """ Adds students to data base """
+        string_format = json.dumps(student, cls=Student2Dict)     # serialize student 
+        try:
+            with open(self.student_data_base, "a") as data_base:
+                string_format += "\n"
+                data_base.write(string_format)
+        except FileNotFoundError:
+                raise FileNotFoundError()
+        
+    
+    def enroll_student(self, student):
         """Checks if the course capacity is not full. Generates students index_number. Add student to his datebase."""
         if self.__student_index <= self.students_num:
             if student.course == self.course_title:
-                student.index_number =  "{}{}-{}".format(self.course_acronym, self.__student_index, str(self.__course_generation))    
+                student.index_number = "{}{}-{}".format(self.course_acronym, self.__student_index, str(self.__course_generation))
                 self.__student_index += 1
-                string_format = json.dumps(student, cls=Student2Dict)
-                
-
-                # Add student to database
-                with open(self.student_data_base, "a") as data_base:
-                    string_format += "\n"
-                    data_base.write(string_format)
+                self.push_student(student) # Adds to data base
+            else:
+                print("Wrong course.")
         else:
             print("Course capacity full.")
 
@@ -52,8 +61,11 @@ class Course:
 
     def create_subject_database(self):
         """ Creates a subject database """
-        with open(self.subject_data_base, "w") as subjects_data:
-            subjects_data.write("*"*50 + self.course_title + "*"*50 + "\n\n")
+        try:
+            with open(self.subject_data_base, "w") as subjects_data:
+                subjects_data.write("*"*50 + self.course_title + "*"*50 + "\n\n")
+        except FileNotFoundError:
+            raise FileNotFoundError()
 
     def add_subjects(self, *subjects):
         """ Adds ProfessorSubject to subjects of course """
@@ -66,6 +78,7 @@ class Course:
             raise FileNotFoundError()
 
     def retrive_subjects(self, serilized_subs):
+        """ Retrives subjects from string """
         retrived_subs = []
         subs_of_strings = serilized_subs
         subs_of_dicts = [json.loads(sub) for sub in subs_of_strings]
@@ -87,6 +100,7 @@ class Course:
                 retrived_date_str = assign["due_date"]
                 retrived_date = datetime.strptime(retrived_date_str, "%b %d %Y")
                 retrived_assign = Assignment(assign["title"],retrived_date)
+                retrived_assign.points = assign["points"]
                 retrived_subject.add_assignements(retrived_assign)
             
             retrived_subs.append(retrived_subject)
@@ -95,31 +109,45 @@ class Course:
 
     def pull_student(self, ind_number):
         """ Retrives student from student_database """
+        retrived_student = None
         try:
-            with open(self.student_data_base, "r+") as student_data:
+            # First open in read mode
+            with open(self.student_data_base, "r") as student_data:
                 lines = student_data.readlines()
-                for line in lines[2:]:
-                    d = json.loads(line)
 
-                    if ind_number == d["index_number"]:
-                        retrived_student = Student(d["first_name"],d["last_name"],d["email"],d["year"],d["course"],d["funding"])
-                        retrived_student.ESPB = d["ESPB"]
-                        retrived_student.index_number = d["index_number"]
-                        retrived_student.average_grade = d["average_grade"]
-                        
-                        subs_of_strings = d["subjects"]
-                        pass_of_strings = d["passed_subs"]
-
-                        retrived_subs = self.retrive_subjects(subs_of_strings)
-                        retrived_passed = self.retrive_subjects(pass_of_strings)
-                        retrived_student.add_subjects(*retrived_subs)
-
-                        for el in retrived_passed:
-                            retrived_student.passed_subs.append(el)
+            # Second open in write mode: write first two lines, write lines that don't match ind number
+            # Don't write lines that match ind number - this way once student is pulled he won't be in file anymore
+            # Push student back to file after modification
+            with open(self.student_data_base, "w") as student_data:
                 
-                        return retrived_student
+                for ind, line in enumerate(lines):
+                    if ind < 2:
+                        student_data.write(line)
+                    elif ind >= 2:
+                        d = json.loads(line)
+                        if ind_number != d["index_number"]:
+                            student_data.write(line)
+                        else:
+                            retrived_student = Student(d["first_name"],d["last_name"],d["email"],d["year"],d["course"],d["funding"])
+                            retrived_student.ESPB = d["ESPB"]
+                            retrived_student.index_number = d["index_number"]
+                            retrived_student.average_grade = d["average_grade"]
+                            
+                            subs_of_strings = d["subjects"]
+                            pass_of_strings = d["passed_subs"]
 
-                print(str(ind_number) + " not found.")  
+                            retrived_subs = self.retrive_subjects(subs_of_strings)
+                            retrived_passed = self.retrive_subjects(pass_of_strings)
+                            retrived_student.add_subjects(*retrived_subs)
+
+                            for el in retrived_passed:
+                                retrived_student.passed_subs.append(el)
+                
+                
+                if retrived_student != None:
+                    return retrived_student
+                else:
+                    print(str(ind_number) + " not found.")  
 
         except FileNotFoundError:
             raise FileNotFoundError()
@@ -156,6 +184,10 @@ if __name__ == "__main__":
     Sale = Student("Aleksandar","Fa","aleksandarfa@devgmail.com", 1, "Biomedical engineering","budget")
     Marko = Student("Marko","Maric", "markomaric@gmail.com", 1, "Biomedical engineering", "personal")
 
+    # upisi studente
+    biomedical_engineering.enroll_student(Sale)
+    biomedical_engineering.enroll_student(Marko)
+
     # kreiraj predmet i dodaj mu zadatke
     oet = Subject("Elektrotehnika", "101",8)
     oet.add_assignements(Assignment("Elektrostatika",datetime(2019,1,10)))
@@ -166,32 +198,27 @@ if __name__ == "__main__":
     rac.add_assignements(Assignment("Petlje",datetime(2019,1,10)))
     rac.add_assignements(Assignment("OOP",datetime(2019,1,10)))
 
-    print("#"*40)
-    # Dodaj predmete studentu
-    Sale.add_subjects(oet, rac)
-
-    # Promeni poene i prosledi
-    Sale.change_assignement_points("Elektrotehnika","Elektrostatika", 40)
-    Sale.change_assignement_points("Elektrotehnika","Elektrodinamika", 40)
-    Sale.forward_subject("Elektrotehnika")
-    
-    # upisi studente
-    biomedical_engineering.push_student(Sale)
-    biomedical_engineering.push_student(Marko)
-
-    #student = biomedical_engineering.retrive_student("BE1-2020")
-    #student.print_subjects(passed = True)
-
-    marko = biomedical_engineering.pull_student("BE2-2020")
-    marko.add_subjects(oet, rac)
-    
-    marko.change_assignement_points("Racunarstvo", "Petlje", 40)
-    marko.change_assignement_points("Racunarstvo", "OOP", 60)
-    marko.forward_subject("Racunarstvo")
-    marko.print_subjects(passed=True)
-    biomedical_engineering.push_student(marko)
-    m = biomedical_engineering.pull_student("BE2-2020")
-    print(m)
+   # Vrati saleta i dodaj mu predmete
+    sale = biomedical_engineering.pull_student("BE1-2020")
+    sale.add_subjects(oet, rac)
+    sale.change_assignement_points("Elektrotehnika", "Elektrostatika", 25)
+    sale.change_assignement_points("Elektrotehnika", "Elektrodinamika", 26)
+    sale.forward_subject("Elektrotehnika")
+    print("First")
+    sale.find_subject("Elektrotehnika").print_assignements()
+    biomedical_engineering.push_student(sale)
+    sale = biomedical_engineering.pull_student("BE1-2020")
+    sale.change_assignement_points("Racunarstvo", "Petlje", 50)
+    sale.change_assignement_points("Racunarstvo", "OOP", 50)
+    sale.forward_subject("Racunarstvo")
+    print("Second")
+    sale.print_subjects(passed = True)
+    biomedical_engineering.push_student(sale)
+    sale = biomedical_engineering.pull_student("BE1-2020")
+    print("Third")
+    sale.print_subjects(passed = True)
+    print(sale)
+    biomedical_engineering.push_student(sale)
     
     
 

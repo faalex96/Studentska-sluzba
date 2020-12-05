@@ -8,7 +8,8 @@ class Assign2Dict(json.JSONEncoder):
         if isinstance(obj, Assignment):
             return {
                 "title":obj.title,
-                "due_date":obj.due_date.strftime("%b %d %Y")
+                "due_date":obj.due_date.strftime("%b %d %Y"),
+                "points":obj.points
             }
         return super().default(obj)
 
