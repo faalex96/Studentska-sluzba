@@ -4,6 +4,7 @@ from student import Student
 from subject import Assignment, Subject
 from datetime import datetime
 from costum_json import Student2Dict
+from new_exceptions import WrongType
 import os
 import json
 
@@ -29,24 +30,36 @@ class Course:
         except FileNotFoundError:
             raise FileNotFoundError()
 
-    def push_student(self, student):
+    def push_students(self, *students):
         """ Adds students to data base """
-        string_format = json.dumps(student, cls=Student2Dict)     # serialize student 
+        # Test if passed "students" are required type 
+        # All or none, if some obj in students is not  Student instance
+        # no student is writen to file
+        for student in students:
+            if not isinstance(student, Student):
+                raise WrongType(type(student), Student)
+            
         try:
             with open(self.student_data_base, "a") as data_base:
-                string_format += "\n"
-                data_base.write(string_format)
+                for student in students:
+                    string_format = json.dumps(student, cls=Student2Dict)     # serialize student 
+                    string_format += "\n"
+                    data_base.write(string_format)
         except FileNotFoundError:
                 raise FileNotFoundError()
+            
         
     
     def enroll_student(self, student):
         """Checks if the course capacity is not full. Generates students index_number. Add student to his datebase."""
+        if not isinstance(student, Student):
+            raise WrongType(type(student), Student)
+        
         if self.__student_index <= self.students_num:
             if student.course == self.course_title:
                 student.index_number = "{}{}-{}".format(self.course_acronym, self.__student_index, str(self.__course_generation))
                 self.__student_index += 1
-                self.push_student(student) # Adds to data base
+                self.push_students(student) # Adds to data base
             else:
                 print("Wrong course.")
         else:
@@ -69,6 +82,11 @@ class Course:
 
     def add_subjects(self, *subjects):
         """ Adds ProfessorSubject to subjects of course """
+        # All or none
+        for sub in subjects:
+            if not isinstance(sub, ProfessorSubject):
+                raise WrongType(type(sub), ProfessorSubject)
+
         try:
             with open(self.subject_data_base, "a") as subject_data:
                 for sub in subjects:
@@ -206,19 +224,19 @@ if __name__ == "__main__":
     sale.forward_subject("Elektrotehnika")
     print("First")
     sale.find_subject("Elektrotehnika").print_assignements()
-    biomedical_engineering.push_student(sale)
+    biomedical_engineering.push_students(sale)
     sale = biomedical_engineering.pull_student("BE1-2020")
     sale.change_assignement_points("Racunarstvo", "Petlje", 50)
     sale.change_assignement_points("Racunarstvo", "OOP", 50)
     sale.forward_subject("Racunarstvo")
     print("Second")
     sale.print_subjects(passed = True)
-    biomedical_engineering.push_student(sale)
+    biomedical_engineering.push_students(sale)
     sale = biomedical_engineering.pull_student("BE1-2020")
     print("Third")
     sale.print_subjects(passed = True)
     print(sale)
-    biomedical_engineering.push_student(sale)
+    biomedical_engineering.push_students(sale)
     
     
 

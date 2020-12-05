@@ -1,5 +1,6 @@
 from person import Person
 from subject import Subject
+from new_exceptions import WrongType
 """ Different design, all searches for subjects will be done by subject code, not by subject title! """
 
 class ProfessorSubject(Subject):
@@ -9,8 +10,14 @@ class ProfessorSubject(Subject):
     
     def add_professors(self, *teachers):
         """ Adds professors to professorsSubject """
+        # All or none
+        for pr in teachers:
+            if not isinstance(pr, Professor):
+                raise WrongType(type(pr), Professor)
+        
         for pr in teachers:
             self.professors.append(pr)
+                
 
     def __str__(self):
         return "#{0} \"{1:<30s}\", ESPB:{2:2s}, Teaches: {3:<20s}".format(self.code, self.title, str(self.ESPB), self.professors[0].full_name)
@@ -50,6 +57,7 @@ class Professor(Person):
 if __name__ == "__main__":
     # Kreiraj profesora
     p = Professor("Goran","Stojanovic", "redovni profesor")
+    p2 = Professor("Natasa","Nesto","asistent")
     p.set_info(email="goranstojanovic@uns.ac.rs", cabinet="A202")
     print(p)
     # Kreiraj predmet
@@ -57,5 +65,6 @@ if __name__ == "__main__":
     medicinska_elektronika = ProfessorSubject("Medicinska Elektronika", "102", 5)
     materijali = ProfessorSubject("Matrijali Fabrikacije", "103", 5)
     p.add_subjects(elektronika, medicinska_elektronika, materijali)
-    elektronika.add_professors(p)
+    elektronika.add_professors(p, p2, [])
+
 

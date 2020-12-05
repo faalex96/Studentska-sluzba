@@ -28,9 +28,16 @@ class Subject:
         self.forwared = False
 
     def add_assignements(self, *assign):
-        """Adds assignement into subject assignements list"""
+        """Adds assignement into subject assignements list"""  
+        # All or none
+        for a in assign:
+            if not isinstance(a, Assignment):
+                raise excp.WrongType(type(a), Assignment)
+                
         for a in assign:
             self.assignements.append(a)
+                
+
 
     def calculate_grade(self):
         """Calculates grade based on assignment points"""
@@ -87,4 +94,6 @@ class Subject:
 
 if __name__ == "__main__":
     mehanika = Subject("Mehanika", "101", 9)
-    print(mehanika)
+    mehanika.add_assignements("Test")
+    mehanika.print_assignements()
+    

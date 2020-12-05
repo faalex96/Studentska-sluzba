@@ -12,3 +12,10 @@ class AssignmentError(Exception):
     def __str__(self):
         return "Assignment \"{}\" not found".format(self.assign_title)
 
+class WrongType(TypeError):
+    def __init__(self, type_found, type_needed):
+        self.type_found = str(type_found)[8:-2]    # Isolate just type from string '<class "typeX">'
+        self.type_needed = type_needed.__name__
+
+    def __str__(self):   
+        return "{} object is required (got type {})".format(self.type_needed, self.type_found)
