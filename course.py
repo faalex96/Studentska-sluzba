@@ -5,22 +5,33 @@ from subject import Assignment, Subject
 from datetime import datetime
 from costum_json import Student2Dict
 from new_exceptions import WrongType
-import os
 import json
-
+import os
 
 class Course:
-    def __init__(self, course_title, students_num, course_professor):
+    def __init__(self, course_title, students_num, course_professor, path=None):
 
         """ Initilize the title of the course and professor that represents it"""
         self.course_title = course_title
         self.course_professor = course_professor
         self.__course_generation = datetime.now().year
-        self.student_data_base = os.getcwd() + "/{}_{}_data.txt".format(self.course_title, self.__course_generation)
-        self.subject_data_base = "{}_subjects_data.txt".format(self.course_title)
+
+        # If course was created with path argument not being None
+        # Than there would be created a folder for course 
+        # All the files would be in that folder
+        if path == None:
+            path_string = ""
+        else:
+            path_string == path + "/{}".format(self.course_title)
+            try:
+                os.mkdir(path_string)
+            except OSError as err:
+                print(err)
+
+        self.student_data_base = path_string+"{}_{}_data.txt".format(self.course_title, self.__course_generation)
+        self.subject_data_base = path_string+"{}_subjects_data.txt".format(self.course_title)
         self.__student_index = 1
         self.students_num = students_num
-        
 
         # Create datebase when course is created
         try:
@@ -54,7 +65,7 @@ class Course:
         """Checks if the course capacity is not full. Generates students index_number. Add student to his datebase."""
         if not isinstance(student, Student):
             raise WrongType(type(student), Student)
-        
+
         if self.__student_index <= self.students_num:
             if student.course == self.course_title:
                 student.index_number = "{}{}-{}".format(self.course_acronym, self.__student_index, str(self.__course_generation))
@@ -237,6 +248,27 @@ if __name__ == "__main__":
     sale.print_subjects(passed = True)
     print(sale)
     biomedical_engineering.push_students(sale)
+
+    Nina = Student("Nevena","Dragic", "nenva@gmail.com","1", "Biomedical engineering", "budget")
+    biomedical_engineering.enroll_student(Nina)
+    nina = biomedical_engineering.pull_student("BE3-2020")
+    nina.add_subjects(oet, rac)
+    nina.change_assignement_points("Elektrotehnika","Elektrodinamika", 50)
+    nina.change_assignement_points("Elektrotehnika","Elektrostatika", 50)
+    nina.forward_subject("Elektrotehnika")
+    biomedical_engineering.push_students(nina)
+    nina = biomedical_engineering.pull_student("BE3-2020")
+    print(nina)
+    nina.print_subjects()
+    nina.change_assignement_points("Racunarstvo","Petlje",50)
+    nina.change_assignement_points("Racunarstvo","OOP",50)
+    nina.forward_subject("Racunarstvo")
+    print("*"*59)
+    nina.print_subjects(passed=True)
+    print(nina)
+    biomedical_engineering.push_students(nina)
+
+
     
     
 
