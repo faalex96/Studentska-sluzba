@@ -15,21 +15,22 @@ class Course:
         self.course_title = course_title
         self.course_professor = course_professor
         self.__course_generation = datetime.now().year
+        self.path = path
 
         # If course was created with path argument not being None
         # Than there would be created a folder for course 
         # All the files would be in that folder
-        if path == None:
-            path_string = ""
+        if self.path == None:
+            path_string = os.getcwd()
         else:
-            path_string == path + "/{}".format(self.course_title)
+            path_string = self.path + "/{}".format(self.course_title)
             try:
                 os.mkdir(path_string)
             except OSError as err:
                 print(err)
 
-        self.student_data_base = path_string+"{}_{}_data.txt".format(self.course_title, self.__course_generation)
-        self.subject_data_base = path_string+"{}_subjects_data.txt".format(self.course_title)
+        self.student_data_base = path_string+"/{}_{}_data.txt".format(self.course_title, self.__course_generation)
+        self.subject_data_base = path_string+"/{}_subjects_data.txt".format(self.course_title)
         self.__student_index = 1
         self.students_num = students_num
 
@@ -105,8 +106,9 @@ class Course:
                     subject_data.write(string_format)
         except FileNotFoundError:
             raise FileNotFoundError()
-
-    def retrive_subjects(self, serilized_subs):
+    
+    @staticmethod
+    def retrive_subjects(serilized_subs):
         """ Retrives subjects from string """
         retrived_subs = []
         subs_of_strings = serilized_subs
@@ -165,8 +167,8 @@ class Course:
                             subs_of_strings = d["subjects"]
                             pass_of_strings = d["passed_subs"]
 
-                            retrived_subs = self.retrive_subjects(subs_of_strings)
-                            retrived_passed = self.retrive_subjects(pass_of_strings)
+                            retrived_subs = Course.retrive_subjects(subs_of_strings)
+                            retrived_passed = Course.retrive_subjects(pass_of_strings)
                             retrived_student.add_subjects(*retrived_subs)
 
                             for el in retrived_passed:
