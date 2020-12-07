@@ -92,7 +92,7 @@ class Course:
         except FileNotFoundError:
             raise FileNotFoundError()
 
-    def add_subjects(self, *subjects):
+    def push_subjects(self, *subjects):
         """ Adds ProfessorSubject to subjects of course """
         # All or none
         for sub in subjects:
@@ -153,7 +153,7 @@ class Course:
                 
                 for ind, line in enumerate(lines):
                     if ind < 2:
-                        student_data.write(line)
+                        student_data.write(line)    # Write first two lines, header of the file
                     elif ind >= 2:
                         d = json.loads(line)
                         if ind_number != d["index_number"]:
@@ -182,6 +182,33 @@ class Course:
 
         except FileNotFoundError:
             raise FileNotFoundError()
+
+    def pull_subject(self, code):
+        retrived_sub = None
+        with open(self.subject_data_base, "r") as data_base:
+            lines = data_base.readlines()
+
+        with open(self.subject_data_base, "w") as data_base:
+            # Write lines 0 and 1 - header of the file
+            data_base.write(lines[0])
+            data_base.write(lines[1])
+            
+            for line in lines[2:]:
+                code_found, title, espb, professor = line.split(",")
+
+                if code_found.strip("#") == code:
+                    retrived_sub = ProfessorSubject(title.strip(), code_found.strip("#"), int(espb.strip().split(":")[1]))
+                    full_name = professor.lstrip().split(":")
+                    full_name = full_name[1].strip("\n").strip()
+                    first, last = full_name.split(" ")
+                    retrived_sub.add_professors(Professor(first, last, ""))
+                else:
+                    data_base.write(line)
+
+        if retrived_sub != None:
+            return retrived_sub
+        else:
+            print(str(code) + " not found.")
                      
 
     def __str__(self):
@@ -208,7 +235,7 @@ if __name__ == "__main__":
     racunarstvo.add_professors(Segedinac)
 
     biomedical_engineering.create_subject_database()
-    biomedical_engineering.add_subjects(mehanika, racunarstvo)
+    biomedical_engineering.push_subjects(mehanika, racunarstvo)
 
 
     # kreira studente
@@ -269,8 +296,10 @@ if __name__ == "__main__":
     nina.print_subjects(passed=True)
     print(nina)
     biomedical_engineering.push_students(nina)
+    #sub = biomedical_engineering.pull_subject("101")
 
-
+    sub = biomedical_engineering.pull_subject("102")
+    print(sub)
     
     
 
