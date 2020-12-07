@@ -201,7 +201,7 @@ class Course:
                     full_name = professor.lstrip().split(":")
                     full_name = full_name[1].strip("\n").strip()
                     first, last = full_name.split(" ")
-                    retrived_sub.add_professors(Professor(first, last, ""))
+                    retrived_sub.add_professor(Professor(first, last, ""))
                 else:
                     data_base.write(line)
 
@@ -216,90 +216,7 @@ class Course:
 
 # Driver code
 if __name__ == "__main__":
-    # kreira profesora i smer
-    prof = Professor("Nikola","Jorgovanovic","redovni profesor")
-    biomedical_engineering = Course("Biomedical engineering", 60, prof)
-
-    # Dodaj predmete sa profesorima u bazu
-    Spasic = Professor("Dragan","Spasic", "redovni profesor")
-    Okuka = Professor("Aleksandar","Okuka", "asistent")
-
-    mehanika = ProfessorSubject("Mehanika", "101", 9)
-    mehanika.add_professors(Spasic, Okuka)
-    a = Assignment("Statika", datetime(2021, 1, 30))
-    mehanika.add_assignements(a)
-
-    Segedinac = Professor("Milan","Segedinac", "redovni profesor")
-
-    racunarstvo = ProfessorSubject("Racunarstvo", "102", 12)
-    racunarstvo.add_professors(Segedinac)
-
-    biomedical_engineering.create_subject_database()
-    biomedical_engineering.push_subjects(mehanika, racunarstvo)
-
-
-    # kreira studente
-    Sale = Student("Aleksandar","Fa","aleksandarfa@devgmail.com", 1, "Biomedical engineering","budget")
-    Marko = Student("Marko","Maric", "markomaric@gmail.com", 1, "Biomedical engineering", "personal")
-
-    # upisi studente
-    biomedical_engineering.enroll_student(Sale)
-    biomedical_engineering.enroll_student(Marko)
-
-    # kreiraj predmet i dodaj mu zadatke
-    oet = Subject("Elektrotehnika", "101",8)
-    oet.add_assignements(Assignment("Elektrostatika",datetime(2019,1,10)))
-    oet.add_assignements(Assignment("Elektrodinamika",datetime(2019,1,12)))
-
-    # kreiraj predmet i dodaj mu zadatke
-    rac = Subject("Racunarstvo", "102",10)
-    rac.add_assignements(Assignment("Petlje",datetime(2019,1,10)))
-    rac.add_assignements(Assignment("OOP",datetime(2019,1,10)))
-
-   # Vrati saleta i dodaj mu predmete
-    sale = biomedical_engineering.pull_student("BE1-2020")
-    sale.add_subjects(oet, rac)
-    sale.change_assignement_points("Elektrotehnika", "Elektrostatika", 25)
-    sale.change_assignement_points("Elektrotehnika", "Elektrodinamika", 26)
-    sale.forward_subject("Elektrotehnika")
-    print("First")
-    sale.find_subject("Elektrotehnika").print_assignements()
-    biomedical_engineering.push_students(sale)
-    sale = biomedical_engineering.pull_student("BE1-2020")
-    sale.change_assignement_points("Racunarstvo", "Petlje", 50)
-    sale.change_assignement_points("Racunarstvo", "OOP", 50)
-    sale.forward_subject("Racunarstvo")
-    print("Second")
-    sale.print_subjects(passed = True)
-    biomedical_engineering.push_students(sale)
-    sale = biomedical_engineering.pull_student("BE1-2020")
-    print("Third")
-    sale.print_subjects(passed = True)
-    print(sale)
-    biomedical_engineering.push_students(sale)
-
-    Nina = Student("Nevena","Dragic", "nenva@gmail.com","1", "Biomedical engineering", "budget")
-    biomedical_engineering.enroll_student(Nina)
-    nina = biomedical_engineering.pull_student("BE3-2020")
-    nina.add_subjects(oet, rac)
-    nina.change_assignement_points("Elektrotehnika","Elektrodinamika", 50)
-    nina.change_assignement_points("Elektrotehnika","Elektrostatika", 50)
-    nina.forward_subject("Elektrotehnika")
-    biomedical_engineering.push_students(nina)
-    nina = biomedical_engineering.pull_student("BE3-2020")
-    print(nina)
-    nina.print_subjects()
-    nina.change_assignement_points("Racunarstvo","Petlje",50)
-    nina.change_assignement_points("Racunarstvo","OOP",50)
-    nina.forward_subject("Racunarstvo")
-    print("*"*59)
-    nina.print_subjects(passed=True)
-    print(nina)
-    biomedical_engineering.push_students(nina)
-    #sub = biomedical_engineering.pull_subject("101")
-
-    sub = biomedical_engineering.pull_subject("102")
-    print(sub)
+   pass
     
     
 

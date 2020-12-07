@@ -45,6 +45,4 @@ class Person:
 
 
 if __name__ == "__main__":
-    p = Person("Pera","Peric")
-    #predmet = Subject("mata", "bla",13)
-    p.add_subjects([])
+    pass

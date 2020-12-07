@@ -83,34 +83,7 @@ class StudentService:
         
         
 if __name__ == "__main__":
-    ftn = StudentService("University", "Fakultet tehnickih nauka")
-    c = ftn.create_course("Biomedical engineering", 60, course.Professor("Nikola","Jorgovanovic","redovni profesor"))
-    c.create_subject_database()
-    sub1 = course.ProfessorSubject("Mehanika","101",10)
-    sub1.add_professors(course.Professor("Dragan", "Spasic","redovni profesor"))
-    sub2 = course.ProfessorSubject("Elektronika", "102", 12)
-    sub2.add_professors(course.Professor("Goran","Stojanovic", "redovni profesor"))
-    c.add_subjects(sub1, sub2)
-
-    c.enroll_student(course.Student("Aleksandar","Fa","aleksandarfadev@gmail.com", 1, "Biomedical engineering","budget"))
-    sale = c.pull_student("BE1-2020")
-    print(sale)
-    sub1 = course.Subject("Mehanika", "101",10)
-    sub2 = course.Subject("Elektronika", "101",10)
-    sub1.add_assignements(course.Assignment("Statika", datetime(2019, 1, 10)), course.Assignment("Dinamika", datetime(2019,2,10)))
-    sale.add_subjects(sub1, sub2)
-    sale.change_assignement_points("Mehanika","Statika", 50)
-    sale.change_assignement_points("Mehanika","Dinamika", 50)
-    sale.forward_subject("Mehanika")
-    sale.print_subjects(passed = True)
-    c.push_students(sale)
-    print("*"*60)
-    sale.print_subjects()
-    print(sale)
-
-    ftn.creat_logs()
-    ftn.create_user("Aca", "asd1231f#$%", "admin")
-    ftn.create_user("Aca2", "asd1231f#$%", "admin")
+    pass
 
 
 

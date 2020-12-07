@@ -61,19 +61,6 @@ class Professor(Person):
 
 # Driver code
 if __name__ == "__main__":
-    # Kreiraj profesora
-    p = Professor("Goran","Stojanovic", "redovni profesor")
-    p2 = Professor("Natasa","Nesto","asistent")
-    p.set_info(email="goranstojanovic@uns.ac.rs", cabinet="A202")
-    print(p)
-    # Kreiraj predmet
-    elektronika = ProfessorSubject("Elektronika", "101", 5)
-    medicinska_elektronika = ProfessorSubject("Medicinska Elektronika", "102", 5)
-    materijali = ProfessorSubject("Matrijali Fabrikacije", "103", 5)
-    p.add_subjects(elektronika, medicinska_elektronika, materijali)
-    elektronika.add_professor(p)
-    print(elektronika)
-    elektronika.remove_professor("Goran","Stojanovic")
-    print(elektronika)
+    pass
 
 

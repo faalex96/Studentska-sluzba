@@ -93,7 +93,5 @@ class Subject:
 
 
 if __name__ == "__main__":
-    mehanika = Subject("Mehanika", "101", 9)
-    mehanika.add_assignements("Test")
-    mehanika.print_assignements()
+    pass
     
